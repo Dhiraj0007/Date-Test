@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+	
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="${jdbc.driverClassName}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="user" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<!-- these are C3P0 properties -->
+        <property name="acquireIncrement" value="1" />
+        <!-- <property name="minPoolSize" value="5" />
+        <property name="maxPoolSize" value="20" />
+        <property name="maxIdleTime" value="30" /> -->
+        <property name="testConnectionOnCheckin" value="true"/>
+        <property name="testConnectionOnCheckout" value="false"/>
+        <property name="automaticTestTable" value="con_test"/>
+    	<property name="checkoutTimeout" value="30000"/>
+    	<property name="idleConnectionTestPeriod" value="30"/>
+    	<property name="initialPoolSize" value="10"/>
+    	<property name="maxIdleTime" value="30"/>
+    	<property name="maxPoolSize" value="100"/>
+    	<property name="minPoolSize" value="10"/>
+    	<property name="maxStatements" value="200"/>
+	</bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+
+				<!-- show mysql queries output in console -->
+				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+
+				<!-- manage automatic database creation -->
+				<prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl}</prop>
+				<prop key="hibernate.connection.CharSet">${hibernate.connection.CharSet}</prop>
+				<prop key="hibernate.connection.characterEncoding">${hibernate.connection.characterEncoding}</prop>
+				<prop key="hibernate.connection.useUnicode">${hibernate.connection.useUnicode}</prop>
+				<prop key="http.encoding.charse">${http.encoding.charse}</prop>
+				<prop key="http.encoding.enabled">${http.encoding.enabled}</prop>
+				<prop key="hibernate.connection.release_mode">AFTER_TRANSACTION</prop>
+				<!-- <prop key="hibernate.search.default.directory_provider" >filesystem</prop>
+				<prop key="hibernate.search.default.indexwriter.infostream">true</prop> -->
+			</props>
+		</property>
+		<property name="packagesToScan" value="com.dhiraj.datetest.model"></property>
+	</bean>
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<!-- <tx:annotation-driven/> -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+</beans> 
